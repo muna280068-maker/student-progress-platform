@@ -3614,10 +3614,10 @@ init();
           <tbody>
             ${a.slice().reverse().map(x => `
               <tr>
-                <td>${escapeHtml(x.time || "")}</td>
-                <td>${escapeHtml(termLabel(x.term || 1))}</td>
-                <td>${escapeHtml(x.action || "")}</td>
-                <td>${escapeHtml(x.details || "")}</td>
+                <td>${esc(x.time || "")}</td>
+<td>${esc(termLabel(x.term || 1))}</td>
+<td>${esc(x.action || "")}</td>
+<td>${esc(x.details || "")}</td>
               </tr>
             `).join("")}
           </tbody>
