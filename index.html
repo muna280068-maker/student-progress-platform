@@ -1539,15 +1539,63 @@ async function cloudPush(showAlert=true){
   }
 }
 function cloudRead(callback){
-  const cb="__bel3elmCloudCb_"+Date.now();
-  const script=document.createElement("script");
-  let done=false;
-  const cleanup=()=>{try{delete window[cb]}catch(e){};script.remove()};
-  window[cb]=(res)=>{done=true;cleanup();callback(null,res)};
-  script.onerror=()=>{if(!done){cleanup();callback(new Error("cloud"))}};
-  script.src=CLOUD_URL+"?callback="+encodeURIComponent(cb)+"&_="+Date.now();
-  document.head.appendChild(script);
-  setTimeout(()=>{if(!done){cleanup();callback(new Error("timeout"))}},12000);
+  let finished = false;
+  let attemptNo = 0;
+  const maxAttempts = 3;
+
+  function finish(err, res){
+    if(finished) return;
+    finished = true;
+    callback(err, res);
+  }
+
+  function attempt(){
+    attemptNo++;
+
+    const cb = "__bel3elmCloudCb_" + Date.now() + "_" + attemptNo;
+    const script = document.createElement("script");
+    let timer = null;
+
+    const cleanup = ()=>{
+      try{ delete window[cb]; }catch(e){}
+      try{ script.remove(); }catch(e){}
+      if(timer) clearTimeout(timer);
+    };
+
+    window[cb] = (res)=>{
+      cleanup();
+      finish(null, res);
+    };
+
+    script.onerror = ()=>{
+      cleanup();
+
+      if(attemptNo < maxAttempts){
+        setTimeout(attempt, 1000);
+      }else{
+        finish(new Error("cloud"));
+      }
+    };
+
+    script.src =
+      CLOUD_URL +
+      "?callback=" + encodeURIComponent(cb) +
+      "&_=" + Date.now();
+
+    document.head.appendChild(script);
+
+    timer = setTimeout(()=>{
+      cleanup();
+
+      if(attemptNo < maxAttempts){
+        setTimeout(attempt, 1000);
+      }else{
+        finish(new Error("timeout"));
+      }
+    }, 30000);
+  }
+
+  attempt();
 }
 function applyCloudState(cloudState){
   if(!cloudState||!Array.isArray(cloudState.students)||!Array.isArray(cloudState.assessments))return false;
