@@ -626,17 +626,6 @@ th{background:#fcfaf8;color:#514944;position:sticky;top:0}
 @media(max-width:1050px){.priority-grid{grid-template-columns:repeat(3,1fr)}}
 @media(max-width:650px){.priority-grid{grid-template-columns:1fr 1fr}}
 
-
-.skill-preset-box{margin-top:12px;border:1px solid var(--line);background:#fffaf7;border-radius:13px;padding:13px}
-.skill-preset-box h4{margin:0 0 10px;color:var(--maroon)}
-.skill-preset-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
-.skill-preset-option{display:flex;align-items:center;gap:8px;border:1px solid var(--line);border-radius:10px;background:#fff;padding:9px 10px;cursor:pointer}
-.skill-preset-option:hover{background:#fff6f1}
-.skill-preset-option input{width:18px;height:18px;accent-color:var(--maroon)}
-.skill-preset-tools{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
-@media(max-width:900px){.skill-preset-grid{grid-template-columns:1fr 1fr}}
-@media(max-width:600px){.skill-preset-grid{grid-template-columns:1fr}}
-
 </style>
 
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
@@ -1191,20 +1180,11 @@ th{background:#fcfaf8;color:#514944;position:sticky;top:0}
         <div class="panel">
           <div class="panel-title"><div><h3>إدارة المهارات</h3><div class="subtle">يمكن إضافة المهارات من قائمة جاهزة أو كتابة اسم مهارة جديدة مرة واحدة فقط في الإعداد.</div></div></div>
           <div class="form-grid">
-            <label>الصف<select id="skillGrade" onchange="renderSkillPresets()"><option value="6">الصف السادس</option><option value="7">الصف السابع</option></select></label>
+            <label>الصف<select id="skillGrade"><option value="6">الصف السادس</option><option value="7">الصف السابع</option></select></label>
             <label>الفصل الدراسي<select id="skillTerm"><option value="1">الأول</option><option value="2">الثاني</option><option value="3">الثالث</option></select></label>
-            <label>المهارة / الموضوع<input id="skillName" placeholder="اكتبي مهارة إضافية إن لم تجديها بالقائمة"></label>
-          <div class="skill-preset-box" style="grid-column:1/-1">
-            <h4>☑️ اختاري مهارة أو أكثر من القائمة الجاهزة</h4>
-            <div id="skillPresetGrid" class="skill-preset-grid"></div>
-            <div class="skill-preset-tools">
-              <button type="button" class="btn btn-soft" onclick="selectAllSkillPresets()">تحديد الكل</button>
-              <button type="button" class="btn btn-soft" onclick="clearSkillPresets()">إلغاء التحديد</button>
-              <button type="button" class="btn btn-primary" onclick="addSelectedSkillPresets()">＋ إضافة المهارات المحددة</button>
-            </div>
+            <label>المهارة / الموضوع<input id="skillName" placeholder="مثال: الخلايا والحياة"></label>
           </div>
-          </div>
-          <div class="actions"><button class="btn btn-primary" onclick="addSkill()">＋ إضافة المهارة المكتوبة</button></div>
+          <div class="actions"><button class="btn btn-primary" onclick="addSkill()">＋ إضافة المهارة</button></div>
           <div id="skillChips" style="margin-top:10px"></div>
         </div>
 
@@ -1319,8 +1299,9 @@ th{background:#fcfaf8;color:#514944;position:sticky;top:0}
             </div>
             <div>
               <h3>إدارة البيانات</h3>
-              <p class="subtle">يمكن مسح بيانات التجربة أو استعادة نسخة احتياطية محفوظة سابقًا.</p>
+              <p class="subtle">يمكن تنزيل نسخة احتياطية كاملة من بيانات المنصة، أو استعادة نسخة محفوظة سابقًا، أو مسح بيانات التجربة.</p>
               <div class="restore-row">
+                <button class="btn btn-primary" onclick="downloadBackup()">💾 تحميل نسخة احتياطية للبيانات</button>
                 <button class="btn btn-danger" onclick="resetData()">مسح جميع البيانات</button>
                 <input type="file" id="restoreFile" accept=".json">
                 <button class="btn btn-soft" onclick="restoreBackup()">استعادة النسخة</button>
@@ -2416,87 +2397,6 @@ function renderYearClassChart(){
 }
 
 
-
-const SKILL_PRESETS={
-  "6":[
-    "الخلايا والحياة",
-    "مكونات الخلية ووظائفها",
-    "انتقال المواد عبر الخلية",
-    "الخلايا والطاقة",
-    "التنفس الخلوي والتخمر",
-    "الشمس والأرض والقمر",
-    "أطوار القمر والكسوف والخسوف",
-    "النظام الشمسي",
-    "الكواكب والأجرام السماوية",
-    "النجوم والمجرات",
-    "موارد الطاقة",
-    "الموارد الأرضية",
-    "موارد الهواء والماء",
-    "بنية الذرة",
-    "خواص المادة",
-    "المحاليل الحمضية والقاعدية",
-    "تفسير الرسوم والصور العلمية",
-    "تحليل البيانات",
-    "الاستنتاج العلمي",
-    "تطبيق المعرفة"
-  ],
-  "7":[
-    "الغلاف الجوي",
-    "السحب وأنواعها",
-    "الحمل الحراري",
-    "الطقس والجبهات الهوائية",
-    "العواصف والطقس القاسي",
-    "التنوع النباتي",
-    "تكاثر النباتات",
-    "عمليات واستجابات النبات",
-    "استكشاف الفضاء",
-    "التجوية والتعرية",
-    "الصفائح التكتونية",
-    "الزلازل والبراكين",
-    "بنية الذرة",
-    "التغيرات الفيزيائية والكيميائية",
-    "خواص المادة",
-    "المحاليل",
-    "تفسير الرسوم والصور العلمية",
-    "تحليل البيانات",
-    "الاستنتاج العلمي",
-    "تطبيق المعرفة"
-  ]
-};
-function renderSkillPresets(){
-  const box=document.getElementById("skillPresetGrid"); if(!box)return;
-  const grade=document.getElementById("skillGrade")?.value||"6";
-  const items=SKILL_PRESETS[grade]||[];
-  box.innerHTML=items.map((name,i)=>`
-    <label class="skill-preset-option">
-      <input type="checkbox" class="skill-preset-check" value="${esc(name)}">
-      <span>${esc(name)}</span>
-    </label>`).join("");
-}
-function selectAllSkillPresets(){
-  document.querySelectorAll(".skill-preset-check").forEach(x=>x.checked=true);
-}
-function clearSkillPresets(){
-  document.querySelectorAll(".skill-preset-check").forEach(x=>x.checked=false);
-}
-function addSelectedSkillPresets(){
-  const grade=document.getElementById("skillGrade")?.value||"6";
-  const term=Number(document.getElementById("skillTerm")?.value||currentTerm());
-  const selected=[...document.querySelectorAll(".skill-preset-check:checked")].map(x=>x.value);
-  if(!selected.length){alert("اختاري مهارة واحدة على الأقل.");return}
-  let added=0;
-  selected.forEach(name=>{
-    if(!state.skills.some(x=>x.name===name&&x.grade===grade&&Number(x.term)===term)){
-      state.skills.push({id:uid("skill"),name,grade,term});added++;
-    }
-  });
-  persist();
-  clearSkillPresets();
-  renderSkills();
-  populateAssessmentSkill();
-  alert(`تمت إضافة ${added} مهارة.`);
-}
-
 function gradeForClass(cls){return String(cls||"").startsWith("7")?"7":"6"}
 function addSkill(){
   const name=(document.getElementById("skillName")?.value||"").trim();
@@ -2536,7 +2436,6 @@ function skillStats(skillId,cls){
   return {ass,vals,avg,mastered,progress,support};
 }
 function renderSkills(){
-  renderSkillPresets();
   const chips=document.getElementById("skillChips"),cards=document.getElementById("skillAnalysisCards"),supportBox=document.getElementById("skillSupportTable");
   if(!chips||!cards||!supportBox)return;
   document.getElementById("skillTerm").value=String(currentTerm());
@@ -2777,6 +2676,22 @@ function unlockApp(){
   if(v===state.settings.pin){document.getElementById("lockScreen").classList.remove("show");document.getElementById("pinError").textContent="";}
   else document.getElementById("pinError").textContent="رمز الدخول غير صحيح.";
 }
+function downloadBackup(){
+  try{
+    persist();
+    const payload={...state,_backupMeta:{platform:"بالعلم نبلغ الآفاق",exportedAt:new Date().toISOString(),version:"backup-v1"}};
+    const blob=new Blob([JSON.stringify(payload,null,2)],{type:"application/json;charset=utf-8"});
+    const a=document.createElement("a");
+    const d=new Date();
+    const stamp=d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+    a.href=URL.createObjectURL(blob);
+    a.download="بالعلم_نبلغ_الآفاق_نسخة_احتياطية_"+stamp+".json";
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+    alert("تم تنزيل النسخة الاحتياطية. احتفظي بالملف في مكان آمن.");
+  }catch(e){alert("تعذر إنشاء النسخة الاحتياطية.");}
+}
+
 function restoreBackup(){
   const f=document.getElementById("restoreFile").files[0];
   if(!f){alert("اختاري ملف النسخة الاحتياطية أولًا.");return}
