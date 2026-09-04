@@ -3578,7 +3578,7 @@ init();
     const el=e.target.closest("button");
     if(!el)return;
     const tx=(el.textContent||"").trim();
-    if(/حفظ|إضافة|حذف|تعديل|استيراد|العلاج|اعتماد/.test(tx) && !/فتح الفصل/.test(tx) && !el.closest(".global-term-picker")){
+   if(!tx.includes("سجل التعديلات") && (/حفظ|إضافة|استيراد|تعديل|حذف/.test(tx) && !/فتح الفصل/.test(tx) && !el.closest(".global-term-picker"))){
       e.preventDefault();e.stopImmediatePropagation();alert("🔒 هذا الفصل معتمد. افتحي الفصل أولًا إذا أردتِ تعديل البيانات.");
     }
   },true);
