@@ -3583,15 +3583,51 @@ init();
     }
   },true);
 
-  window.showAuditLog=function(){
-    document.getElementById("adminToolsTitle").textContent="🕓 سجل التعديلات";
-    const a=state.auditLog||[];
-    document.getElementById("adminToolsBody").innerHTML=a.length?`
-      <table class="audit-table"><thead><tr><th>الوقت</th><th>الفصل</th><th>الإجراء</th><th>التفاصيل</th></tr></thead>
-      <tbody>${a.map(x=>`<tr><td>${escapeHtml(x.time||"")}</td><td>${escapeHtml(termLabel(x.term||1))}</td><td>${escapeHtml(x.action||"")}</td><td>${escapeHtml(x.details||"")}</td></tr>`).join("")}</tbody></table>`:
-      `<p style="padding:20px;text-align:center">لا توجد تعديلات مسجلة بعد.</p>`;
-    document.getElementById("adminToolsOverlay").style.display="block";
-  };
+ window.showAuditLog = function(){
+  const title = document.getElementById("adminToolsTitle");
+  const body = document.getElementById("adminToolsBody");
+  const overlay = document.getElementById("adminToolsOverlay");
+
+  if(!title || !body || !overlay){
+    alert("تعذر فتح سجل التعديلات.");
+    return;
+  }
+
+  title.textContent = "🕘 سجل التعديلات";
+
+  const a = Array.isArray(state.auditLog) ? state.auditLog : [];
+
+  if(a.length === 0){
+    body.innerHTML = '<p style="padding:20px;text-align:center">لا توجد تعديلات مسجلة بعد.</p>';
+  } else {
+    body.innerHTML = `
+      <div style="overflow-x:auto">
+        <table class="audit-table">
+          <thead>
+            <tr>
+              <th>الوقت</th>
+              <th>الفصل</th>
+              <th>الإجراء</th>
+              <th>التفاصيل</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${a.slice().reverse().map(x => `
+              <tr>
+                <td>${escapeHtml(x.time || "")}</td>
+                <td>${escapeHtml(termLabel(x.term || 1))}</td>
+                <td>${escapeHtml(x.action || "")}</td>
+                <td>${escapeHtml(x.details || "")}</td>
+              </tr>
+            `).join("")}
+          </tbody>
+        </table>
+      </div>
+    `;
+  }
+
+  overlay.style.display = "block";
+}; 
 
   // Generic audit hooks for the main platform's existing save actions.
   document.addEventListener("click",function(e){
