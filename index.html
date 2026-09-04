@@ -626,6 +626,17 @@ th{background:#fcfaf8;color:#514944;position:sticky;top:0}
 @media(max-width:1050px){.priority-grid{grid-template-columns:repeat(3,1fr)}}
 @media(max-width:650px){.priority-grid{grid-template-columns:1fr 1fr}}
 
+
+.skill-preset-box{margin-top:12px;border:1px solid var(--line);background:#fffaf7;border-radius:13px;padding:13px}
+.skill-preset-box h4{margin:0 0 10px;color:var(--maroon)}
+.skill-preset-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.skill-preset-option{display:flex;align-items:center;gap:8px;border:1px solid var(--line);border-radius:10px;background:#fff;padding:9px 10px;cursor:pointer}
+.skill-preset-option:hover{background:#fff6f1}
+.skill-preset-option input{width:18px;height:18px;accent-color:var(--maroon)}
+.skill-preset-tools{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+@media(max-width:900px){.skill-preset-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:600px){.skill-preset-grid{grid-template-columns:1fr}}
+
 </style>
 
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
@@ -1180,11 +1191,20 @@ th{background:#fcfaf8;color:#514944;position:sticky;top:0}
         <div class="panel">
           <div class="panel-title"><div><h3>إدارة المهارات</h3><div class="subtle">يمكن إضافة المهارات من قائمة جاهزة أو كتابة اسم مهارة جديدة مرة واحدة فقط في الإعداد.</div></div></div>
           <div class="form-grid">
-            <label>الصف<select id="skillGrade"><option value="6">الصف السادس</option><option value="7">الصف السابع</option></select></label>
+            <label>الصف<select id="skillGrade" onchange="renderSkillPresets()"><option value="6">الصف السادس</option><option value="7">الصف السابع</option></select></label>
             <label>الفصل الدراسي<select id="skillTerm"><option value="1">الأول</option><option value="2">الثاني</option><option value="3">الثالث</option></select></label>
-            <label>المهارة / الموضوع<input id="skillName" placeholder="مثال: الخلايا والحياة"></label>
+            <label>المهارة / الموضوع<input id="skillName" placeholder="اكتبي مهارة إضافية إن لم تجديها بالقائمة"></label>
+          <div class="skill-preset-box" style="grid-column:1/-1">
+            <h4>☑️ اختاري مهارة أو أكثر من القائمة الجاهزة</h4>
+            <div id="skillPresetGrid" class="skill-preset-grid"></div>
+            <div class="skill-preset-tools">
+              <button type="button" class="btn btn-soft" onclick="selectAllSkillPresets()">تحديد الكل</button>
+              <button type="button" class="btn btn-soft" onclick="clearSkillPresets()">إلغاء التحديد</button>
+              <button type="button" class="btn btn-primary" onclick="addSelectedSkillPresets()">＋ إضافة المهارات المحددة</button>
+            </div>
           </div>
-          <div class="actions"><button class="btn btn-primary" onclick="addSkill()">＋ إضافة المهارة</button></div>
+          </div>
+          <div class="actions"><button class="btn btn-primary" onclick="addSkill()">＋ إضافة المهارة المكتوبة</button></div>
           <div id="skillChips" style="margin-top:10px"></div>
         </div>
 
@@ -1299,12 +1319,20 @@ th{background:#fcfaf8;color:#514944;position:sticky;top:0}
             </div>
             <div>
               <h3>إدارة البيانات</h3>
-              <p class="subtle">يمكن تنزيل نسخة احتياطية كاملة من بيانات المنصة، أو استعادة نسخة محفوظة سابقًا، أو مسح بيانات التجربة.</p>
+              <p class="subtle">يمكن تنزيل نسخة احتياطية كاملة، أو استعادتها لاحقًا، مع مزامنة آمنة بين أجهزتك عبر قاعدة البيانات السحابية.</p>
               <div class="restore-row">
                 <button class="btn btn-primary" onclick="downloadBackup()">💾 تحميل نسخة احتياطية للبيانات</button>
                 <button class="btn btn-danger" onclick="resetData()">مسح جميع البيانات</button>
                 <input type="file" id="restoreFile" accept=".json">
                 <button class="btn btn-soft" onclick="restoreBackup()">استعادة النسخة</button>
+              </div>
+              <div class="soft-divider"></div>
+              <h3>☁️ المزامنة السحابية بين الأجهزة</h3>
+              <p class="subtle">بعد رفع بيانات هذا الجهاز مرة واحدة، ستُحفظ التغييرات الجديدة تلقائيًا وتظهر عند فتح المنصة من جهاز آخر.</p>
+              <div class="restore-row">
+                <button class="btn btn-primary" onclick="cloudSeedFromThisDevice()">☁️ رفع بيانات هذا الجهاز للسحابة</button>
+                <button class="btn btn-soft" onclick="cloudRefreshNow()">🔄 تحديث من السحابة</button>
+                <span id="cloudStatus" class="subtle">الحالة: بانتظار الاتصال</span>
               </div>
               <div class="soft-divider"></div>
               <h3>رمز دخول محلي 🔐</h3>
@@ -1459,7 +1487,85 @@ function loadState(){
  }catch(e){}
  return defaultState();
 }
-function persist(){localStorage.setItem("bel3elmState",JSON.stringify(state))}
+const CLOUD_URL="https://script.google.com/macros/s/AKfycbyjsqzfNt51iQM3unux5l9zUTa4xiIWvcOQm6oEQTII29Gu7fsOUKofByWT9GycY09X/exec";
+let cloudApplyInProgress=false;
+let cloudSaveTimer=null;
+function cloudEnabled(){return localStorage.getItem("bel3elmCloudEnabled")==="1"}
+function setCloudStatus(msg){const el=document.getElementById("cloudStatus");if(el)el.textContent="الحالة: "+msg}
+function persist(){
+  localStorage.setItem("bel3elmState",JSON.stringify(state));
+  if(cloudEnabled()&&!cloudApplyInProgress)scheduleCloudSave();
+}
+function scheduleCloudSave(){
+  clearTimeout(cloudSaveTimer);
+  cloudSaveTimer=setTimeout(()=>cloudPush(false),700);
+}
+async function cloudPush(showAlert=true){
+  try{
+    setCloudStatus("جارٍ الحفظ إلى السحابة…");
+    const body=new URLSearchParams();
+    body.set("state",JSON.stringify(state));
+    await fetch(CLOUD_URL,{method:"POST",mode:"no-cors",headers:{"Content-Type":"application/x-www-form-urlencoded;charset=UTF-8"},body:body.toString()});
+    localStorage.setItem("bel3elmCloudEnabled","1");
+    setCloudStatus("متزامنة ✓");
+    if(showAlert)alert("تم حفظ بيانات المنصة في السحابة بنجاح.");
+  }catch(e){
+    setCloudStatus("تعذر الحفظ السحابي");
+    if(showAlert)alert("تعذر الاتصال بالحفظ السحابي. بيانات هذا الجهاز ما زالت محفوظة محليًا.");
+  }
+}
+function cloudRead(callback){
+  const cb="__bel3elmCloudCb_"+Date.now();
+  const script=document.createElement("script");
+  let done=false;
+  const cleanup=()=>{try{delete window[cb]}catch(e){};script.remove()};
+  window[cb]=(res)=>{done=true;cleanup();callback(null,res)};
+  script.onerror=()=>{if(!done){cleanup();callback(new Error("cloud"))}};
+  script.src=CLOUD_URL+"?callback="+encodeURIComponent(cb)+"&_="+Date.now();
+  document.head.appendChild(script);
+  setTimeout(()=>{if(!done){cleanup();callback(new Error("timeout"))}},12000);
+}
+function applyCloudState(cloudState){
+  if(!cloudState||!Array.isArray(cloudState.students)||!Array.isArray(cloudState.assessments))return false;
+  cloudApplyInProgress=true;
+  state=Object.assign(defaultState(),cloudState);
+  normalizeLegacyData();
+  localStorage.setItem("bel3elmState",JSON.stringify(state));
+  localStorage.setItem("bel3elmCloudEnabled","1");
+  cloudApplyInProgress=false;
+  populateStaticSelects();updateTermUI();renderAll();renderPinState();checkLock();
+  return true;
+}
+function cloudRefreshNow(showAlert=true){
+  setCloudStatus("جارٍ جلب البيانات…");
+  cloudRead((err,res)=>{
+    if(err){setCloudStatus("تعذر الاتصال");if(showAlert)alert("تعذر جلب البيانات من السحابة الآن.");return}
+    if(res&&res.state&&applyCloudState(res.state)){setCloudStatus("تم التحديث من السحابة ✓");if(showAlert)alert("تم تحديث بيانات المنصة من السحابة.")}
+    else{setCloudStatus("لا توجد بيانات سحابية بعد");if(showAlert)alert("لا توجد نسخة سحابية محفوظة بعد. من اللابتوب اضغطي «رفع بيانات هذا الجهاز للسحابة» أولًا.")}
+  });
+}
+function cloudSeedFromThisDevice(){
+  if(!confirm("سيتم اعتماد بيانات هذا الجهاز كنسخة سحابية أساسية. هل تريدين المتابعة؟"))return;
+  cloudPush(true);
+}
+function cloudBootstrap(){
+  setCloudStatus("جارٍ التحقق من السحابة…");
+  cloudRead((err,res)=>{
+    if(err){setCloudStatus(cloudEnabled()?"محلية — تعذر الاتصال":"غير مفعلة بعد");return}
+    if(res&&res.state&&applyCloudState(res.state)){setCloudStatus("متزامنة ✓")}
+    else setCloudStatus("لا توجد بيانات سحابية بعد");
+  });
+}
+function downloadBackup(){
+  const payload=JSON.stringify(state,null,2);
+  const blob=new Blob([payload],{type:"application/json;charset=utf-8"});
+  const a=document.createElement("a");
+  const now=new Date();
+  const stamp=now.toISOString().slice(0,10);
+  a.href=URL.createObjectURL(blob);
+  a.download=`نسخة_احتياطية_بالعلم_نبلغ_الآفاق_${stamp}.json`;
+  document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(a.href);
+}
 function uid(prefix="id"){return prefix+"_"+Date.now().toString(36)+"_"+Math.random().toString(36).slice(2,7)}
 function fmtDate(d){if(!d)return "-"; const x=new Date(d+"T12:00:00"); return x.toLocaleDateString("ar-AE")}
 function esc(s){return String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]))}
@@ -2397,6 +2503,87 @@ function renderYearClassChart(){
 }
 
 
+
+const SKILL_PRESETS={
+  "6":[
+    "الخلايا والحياة",
+    "مكونات الخلية ووظائفها",
+    "انتقال المواد عبر الخلية",
+    "الخلايا والطاقة",
+    "التنفس الخلوي والتخمر",
+    "الشمس والأرض والقمر",
+    "أطوار القمر والكسوف والخسوف",
+    "النظام الشمسي",
+    "الكواكب والأجرام السماوية",
+    "النجوم والمجرات",
+    "موارد الطاقة",
+    "الموارد الأرضية",
+    "موارد الهواء والماء",
+    "بنية الذرة",
+    "خواص المادة",
+    "المحاليل الحمضية والقاعدية",
+    "تفسير الرسوم والصور العلمية",
+    "تحليل البيانات",
+    "الاستنتاج العلمي",
+    "تطبيق المعرفة"
+  ],
+  "7":[
+    "الغلاف الجوي",
+    "السحب وأنواعها",
+    "الحمل الحراري",
+    "الطقس والجبهات الهوائية",
+    "العواصف والطقس القاسي",
+    "التنوع النباتي",
+    "تكاثر النباتات",
+    "عمليات واستجابات النبات",
+    "استكشاف الفضاء",
+    "التجوية والتعرية",
+    "الصفائح التكتونية",
+    "الزلازل والبراكين",
+    "بنية الذرة",
+    "التغيرات الفيزيائية والكيميائية",
+    "خواص المادة",
+    "المحاليل",
+    "تفسير الرسوم والصور العلمية",
+    "تحليل البيانات",
+    "الاستنتاج العلمي",
+    "تطبيق المعرفة"
+  ]
+};
+function renderSkillPresets(){
+  const box=document.getElementById("skillPresetGrid"); if(!box)return;
+  const grade=document.getElementById("skillGrade")?.value||"6";
+  const items=SKILL_PRESETS[grade]||[];
+  box.innerHTML=items.map((name,i)=>`
+    <label class="skill-preset-option">
+      <input type="checkbox" class="skill-preset-check" value="${esc(name)}">
+      <span>${esc(name)}</span>
+    </label>`).join("");
+}
+function selectAllSkillPresets(){
+  document.querySelectorAll(".skill-preset-check").forEach(x=>x.checked=true);
+}
+function clearSkillPresets(){
+  document.querySelectorAll(".skill-preset-check").forEach(x=>x.checked=false);
+}
+function addSelectedSkillPresets(){
+  const grade=document.getElementById("skillGrade")?.value||"6";
+  const term=Number(document.getElementById("skillTerm")?.value||currentTerm());
+  const selected=[...document.querySelectorAll(".skill-preset-check:checked")].map(x=>x.value);
+  if(!selected.length){alert("اختاري مهارة واحدة على الأقل.");return}
+  let added=0;
+  selected.forEach(name=>{
+    if(!state.skills.some(x=>x.name===name&&x.grade===grade&&Number(x.term)===term)){
+      state.skills.push({id:uid("skill"),name,grade,term});added++;
+    }
+  });
+  persist();
+  clearSkillPresets();
+  renderSkills();
+  populateAssessmentSkill();
+  alert(`تمت إضافة ${added} مهارة.`);
+}
+
 function gradeForClass(cls){return String(cls||"").startsWith("7")?"7":"6"}
 function addSkill(){
   const name=(document.getElementById("skillName")?.value||"").trim();
@@ -2436,6 +2623,7 @@ function skillStats(skillId,cls){
   return {ass,vals,avg,mastered,progress,support};
 }
 function renderSkills(){
+  renderSkillPresets();
   const chips=document.getElementById("skillChips"),cards=document.getElementById("skillAnalysisCards"),supportBox=document.getElementById("skillSupportTable");
   if(!chips||!cards||!supportBox)return;
   document.getElementById("skillTerm").value=String(currentTerm());
@@ -2676,22 +2864,6 @@ function unlockApp(){
   if(v===state.settings.pin){document.getElementById("lockScreen").classList.remove("show");document.getElementById("pinError").textContent="";}
   else document.getElementById("pinError").textContent="رمز الدخول غير صحيح.";
 }
-function downloadBackup(){
-  try{
-    persist();
-    const payload={...state,_backupMeta:{platform:"بالعلم نبلغ الآفاق",exportedAt:new Date().toISOString(),version:"backup-v1"}};
-    const blob=new Blob([JSON.stringify(payload,null,2)],{type:"application/json;charset=utf-8"});
-    const a=document.createElement("a");
-    const d=new Date();
-    const stamp=d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
-    a.href=URL.createObjectURL(blob);
-    a.download="بالعلم_نبلغ_الآفاق_نسخة_احتياطية_"+stamp+".json";
-    document.body.appendChild(a); a.click(); a.remove();
-    setTimeout(()=>URL.revokeObjectURL(a.href),1000);
-    alert("تم تنزيل النسخة الاحتياطية. احتفظي بالملف في مكان آمن.");
-  }catch(e){alert("تعذر إنشاء النسخة الاحتياطية.");}
-}
-
 function restoreBackup(){
   const f=document.getElementById("restoreFile").files[0];
   if(!f){alert("اختاري ملف النسخة الاحتياطية أولًا.");return}
@@ -2736,6 +2908,7 @@ function init(){
  populateAssessmentSkill();
  updateTermUI();
  checkLock();
+ cloudBootstrap();
  setupNav();
  document.getElementById("assessDate").value=todayISO();
 }
