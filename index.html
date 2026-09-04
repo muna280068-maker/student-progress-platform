@@ -1416,10 +1416,33 @@ function projectScoreForStudent(studentId,term=currentTerm()){
 }
 function setProjectScore(studentId,value){
   if(currentTerm()!==2)return;
+
   const k=projectKey(studentId,2);
+  const student=(state.students||[]).find(s=>s.id===studentId);
+  const studentName=student ? student.name : studentId;
+
+  const oldScore=Number((state.finalScores[k]||{}).project||0);
+  const newScore=Math.max(0,Math.min(60,Number(value)||0));
+
   state.finalScores[k]=state.finalScores[k]||{};
-  state.finalScores[k].project=Math.max(0,Math.min(60,Number(value)||0));
-  persist();renderFinalScores();renderStudentProfile();renderStudentFocus();renderParentReport();renderParentFocusReport();renderSemester();renderYearSummary();
+  state.finalScores[k].project=newScore;
+
+  persist();
+
+  if(oldScore!==newScore){
+    addAudit(
+      "تعديل درجة المشروع",
+      `${studentName}: من ${oldScore} إلى ${newScore}`
+    );
+  }
+
+  renderFinalScores();
+  renderStudentProfile();
+  renderStudentFocus();
+  renderParentReport();
+  renderParentFocusReport();
+  renderSemester();
+  renderYearSummary();
 }
 
 function finalKey(studentId,term=currentTerm()){
@@ -3541,7 +3564,7 @@ init();
         state.students.push({id:"s"+Date.now()+Math.random().toString(16).slice(2),name,class:cls,pod});
         added++;
       }
-      persist(); addAudit("استيراد طالبات",`تمت إضافة ${added} وتجاوز ${skipped}`);
+      persist(); addAudit("استيراد الطالبات", `تمت إضافة ${added} طالبة، وتم تجاوز ${skipped} سجل مكرر أو غير صالح`);
       try{populateStaticSelects();renderAll()}catch(e){}
       document.getElementById("importResult").innerHTML=`<b>تمت الإضافة: ${added}</b> — تم التجاوز: ${skipped}`;
     }catch(e){document.getElementById("importResult").textContent=e.message}
