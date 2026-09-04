@@ -997,6 +997,7 @@ th{background:#fcfaf8;color:#514944;position:sticky;top:0}
                 <tr>
                   <th>#</th><th>الطالبة</th><th>درجة الاختبارات التلقائية /30<br><small style="font-weight:400;color:var(--muted)">أفضل 3 اختبارات</small></th>
                   <th>مهمات الأداء /40</th><th>الأنشطة الكتابية /30</th><th>المجموع /100</th>
+                  <th>المشروع /60<br><small style="font-weight:400;color:var(--muted)">الفصل الثاني فقط</small></th>
                 </tr>
               </thead>
               <tbody id="finalScoresTable"></tbody>
@@ -2029,6 +2030,7 @@ function renderFinalScores(){
       <td><div class="best3">${best}</div><b>${f.tests}/30</b>${testNote}</td>
       <td><input type="number" class="perf-input" data-stu="${s.id}" min="0" max="40" step="0.5" value="${getCategoryScores(s.id).performance||""}"></td>
       <td><input type="number" class="written-input" data-stu="${s.id}" min="0" max="30" step="0.5" value="${getCategoryScores(s.id).written||""}"></td>
+      <td>${currentTerm()===2?`<input type="number" class="project-input" data-stu="${s.id}" min="0" max="60" step="0.5" value="${projectScoreForStudent(s.id,2)??""}">`:"—"}</td>
       <td class="score-100">${f.total}/100</td>
     </tr>`;
   }).join("");
