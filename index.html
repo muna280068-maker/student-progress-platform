@@ -3583,52 +3583,67 @@ init();
     }
   },true);
 
- window.showAuditLog = function(){
-  const title = document.getElementById("adminToolsTitle");
-  const body = document.getElementById("adminToolsBody");
-  const overlay = document.getElementById("adminToolsOverlay");
+window.showAuditLog = function () {
+  try {
+    const overlay = document.getElementById("adminToolsOverlay");
+    const title = document.getElementById("adminToolsTitle");
+    const body = document.getElementById("adminToolsBody");
 
-  if(!title || !body || !overlay){
-    alert("تعذر فتح سجل التعديلات.");
-    return;
+    if (!overlay || !title || !body) {
+      alert("تعذر العثور على نافذة سجل التعديلات.");
+      return;
+    }
+
+    title.textContent = "🕘 سجل التعديلات";
+
+    const safe = function (value) {
+      return String(value ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    };
+
+    const logs =
+      (typeof state !== "undefined" && Array.isArray(state.auditLog))
+        ? state.auditLog
+        : [];
+
+    if (logs.length === 0) {
+      body.innerHTML =
+        '<div style="padding:30px;text-align:center;font-size:16px;">🕘 لا توجد تعديلات مسجلة حتى الآن.</div>';
+    } else {
+      let html =
+        '<div style="overflow-x:auto;">' +
+        '<table class="audit-table">' +
+        '<thead><tr>' +
+        '<th>الوقت</th>' +
+        '<th>الفصل</th>' +
+        '<th>الإجراء</th>' +
+        '<th>التفاصيل</th>' +
+        '</tr></thead><tbody>';
+
+      logs.slice().reverse().forEach(function (x) {
+        html +=
+          "<tr>" +
+          "<td>" + safe(x.time) + "</td>" +
+          "<td>" + safe(x.term || "") + "</td>" +
+          "<td>" + safe(x.action || "") + "</td>" +
+          "<td>" + safe(x.details || "") + "</td>" +
+          "</tr>";
+      });
+
+      html += "</tbody></table></div>";
+      body.innerHTML = html;
+    }
+
+    overlay.style.display = "block";
+
+  } catch (error) {
+    alert("حدث خطأ في فتح سجل التعديلات: " + error.message);
   }
-
-  title.textContent = "🕘 سجل التعديلات";
-
-  const a = Array.isArray(state.auditLog) ? state.auditLog : [];
-
-  if(a.length === 0){
-    body.innerHTML = '<p style="padding:20px;text-align:center">لا توجد تعديلات مسجلة بعد.</p>';
-  } else {
-    body.innerHTML = `
-      <div style="overflow-x:auto">
-        <table class="audit-table">
-          <thead>
-            <tr>
-              <th>الوقت</th>
-              <th>الفصل</th>
-              <th>الإجراء</th>
-              <th>التفاصيل</th>
-            </tr>
-          </thead>
-          <tbody>
-            ${a.slice().reverse().map(x => `
-              <tr>
-                <td>${esc(x.time || "")}</td>
-<td>${esc(termLabel(x.term || 1))}</td>
-<td>${esc(x.action || "")}</td>
-<td>${esc(x.details || "")}</td>
-              </tr>
-            `).join("")}
-          </tbody>
-        </table>
-      </div>
-    `;
-  }
-
-  overlay.style.display = "block";
-}; 
-
+};
   // Generic audit hooks for the main platform's existing save actions.
   document.addEventListener("click",function(e){
     const b=e.target.closest("button"); if(!b)return;
