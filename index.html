@@ -2312,15 +2312,14 @@ function renderStudentProfile(){
       <div class="student-profile-kpi"><small>الطالبة</small><b>${esc(s.name)}</b>${s.pod?'<div>♿ أصحاب الهمم</div>':""}</div>
       <div class="student-profile-kpi"><small>المستوى الحالي</small>${last?levelChip(last.level):"—"}</div>
       <div class="student-profile-kpi"><small>التغير منذ البداية</small><b>${growthText(id)}</b></div>
-      <div class="student-profile-kpi"><small>الحالة الحالية</small><span class="smart-status ${smart.cls}">${smart.icon} ${smart.label}</span></div>
+      <div class="student-profile-kpi"><small>الحالة الحالية</small><span class="smart-status ${smart.cls}">${smart.icon} ${smart.label}</span></di
     </div>
 
     <div class="student-profile-grid">
       <div class="student-profile-kpi"><small>أفضل 3 اختبارات</small><b>${final.tests}/30</b></div>
       <div class="student-profile-kpi"><small>مهمات الأداء</small><b>${final.performance}/40</b></div>
       <div class="student-profile-kpi"><small>الأنشطة الكتابية</small><b>${final.written}/30</b></div>
-<div class="student-profile-kpi"><small>المجموع النهائي</small><b>${final.total}/100</b></div>${currentTerm()===2?`<div class="student-profile-kpi"><small>المشروع - مستقل</small><b>${(()=>{const p=projectScoreForStudent(id,2);return p==null||p===""||p==="null"||Number.isNaN(Number(p))?"لم تُرصد بعد":Number(p)+"/60"})()}</b></div>`:""}    <div class="profile-chart-wrap">
-      <div class="profile-chart-card">
+       <div class="student-profile-kpi"><small>المشروع - مستمر</small><b>${(()=>{const p=projectScoreForStudent(id,2);return (p==null||p===""||p==="null"||Number.isNaN(Number(p)))?"لم تُرصد بعد":Number(p)+"/60";})()}</b></div>
         <h4>📈 رسم بياني لتقدم مستوى الطالبة عبر الزمن</h4>
         <div class="profile-chart-legend">
           <span><i class="legend-dot" style="background:#3c9b63"></i> متقنة 80–100%</span>
