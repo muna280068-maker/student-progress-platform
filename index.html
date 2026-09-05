@@ -432,8 +432,8 @@ th{background:#fcfaf8;color:#514944;position:sticky;top:0}
 @media(max-width:800px){.yearly-kpis{grid-template-columns:1fr 1fr}}
 
 
-.student-profile-grid{display:grid;grid-template-columns:repeat(4,minmax(160px,1fr));gap:10px;margin:12px 0;align-items:start}
-.student-profile-kpi{background:#fff;border:1px solid var(--line);border-radius:10px;padding:12px;text-align:center}
+.student-profile-grid{display:grid;grid-template-columns:repeat(4,170px);justify-content:center;gap:12px;margin:12px auto;align-items:stretch}
+.student-profile-kpi{background:#fff;border:1px solid var(--line);border-radius:10px;padding:10px 8px;text-align:center;min-height:72px;display:flex;flex-direction:column;justify-content:center}
 .student-profile-kpi small{display:block;color:var(--muted);margin-bottom:5px}
 .student-profile-kpi b{font-size:21px;color:var(--maroon)}
 .profile-status{display:inline-block;padding:7px 12px;border-radius:999px;font-weight:800}
@@ -457,7 +457,7 @@ th{background:#fcfaf8;color:#514944;position:sticky;top:0}
 }
 
 
-.profile-chart-wrap{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px;margin-top:10px;align-items:start}
+.profile-chart-wrap{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(260px,.85fr);gap:16px;margin:14px auto 0;align-items:start;max-width:980px}
 .profile-chart-card{border:1px solid var(--line);border-radius:12px;background:#fff;padding:14px}
 .profile-chart-card h4{margin:0 0 8px;color:var(--maroon)}
 .profile-chart-legend{display:flex;gap:13px;flex-wrap:wrap;font-size:12px;color:var(--muted);margin-bottom:8px}
