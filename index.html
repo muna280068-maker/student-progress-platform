@@ -1413,7 +1413,7 @@ function projectScoreForStudent(studentId,term=currentTerm()){
   if(Number(term)!==2)return null;
   const x=(state.finalScores||{})[projectKey(studentId,term)];
   const v=x?.project;
-  return v===undefined||v===null||v===""?0:Number(v);
+ return v===undefined||v===null||v===""?null:Number(v);
 }
 function setProjectScore(studentId,value){
   if(currentTerm()!==2)return;
