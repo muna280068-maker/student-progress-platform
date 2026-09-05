@@ -2120,21 +2120,28 @@ function saveFinalCategoryScores(){
   });
 
   if(currentTerm()===2){
-    document.querySelectorAll(".project-input").forEach(inp=>{
-      const v=inp.value===""?0:Number(inp.value);
+  document.querySelectorAll(".project-input").forEach(inp=>{
+    const k=projectKey(inp.dataset.stu,2);
+    state.finalScores[k]=state.finalScores[k]||{};
 
-      if(v<0||v>60||Number.isNaN(v)){
-        inp.classList.add("invalid");
-        bad=true;
-        return;
-      }
-
+    if(inp.value===""){
+      delete state.finalScores[k].project;
       inp.classList.remove("invalid");
-      const k=projectKey(inp.dataset.stu,2);
-      state.finalScores[k]=state.finalScores[k]||{};
-      state.finalScores[k].project=v;
-    });
-  }
+      return;
+    }
+
+    const v=Number(inp.value);
+
+    if(v<0||v>60||Number.isNaN(v)){
+      inp.classList.add("invalid");
+      bad=true;
+      return;
+    }
+
+    inp.classList.remove("invalid");
+    state.finalScores[k].project=v;
+  });
+}
 
   if(bad){
     alert("تأكدي من أن مهام الأداء من 0 إلى 40 والأنشطة الكتابية من 0 إلى 30 والمشروع من 0 إلى 60.");
