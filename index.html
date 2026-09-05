@@ -2319,8 +2319,7 @@ function renderStudentProfile(){
       <div class="student-profile-kpi"><small>أفضل 3 اختبارات</small><b>${final.tests}/30</b></div>
       <div class="student-profile-kpi"><small>مهمات الأداء</small><b>${final.performance}/40</b></div>
       <div class="student-profile-kpi"><small>الأنشطة الكتابية</small><b>${final.written}/30</b></div>
-      <div class="student-profile-kpi"><small>المجموع النهائي</small><b>${final.total}/100</b></div>${currentTerm()===2?`<div class="student-profile-kpi"><small>المشروع — مستقل</small><b>${projectScoreForStudent(id,2)}/60</b></div>`:""}
-    </div>
+<div class="student-profile-kpi"><small>المجموع النهائي</small><b>${final.total}/100</b></div>${currentTerm()===2?`<div class="student-profile-kpi"><small>المشروع - مستقل</small><b>${projectScoreForStudent(id,2)==null?"—":projectScoreForStudent(id,2)+"/60"}</b></div>`:""}    </div>
 
     <div class="profile-chart-wrap">
       <div class="profile-chart-card">
