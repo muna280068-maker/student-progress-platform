@@ -2028,8 +2028,7 @@ const low=totals.length?Math.min(...totals):"-";
     <div class="table-wrap">
       <table>
         <thead><tr><th>م</th><th>اسم الطالبة</th><th>الاختبارات /30</th><th>مهمات الأداء /40</th><th>الأنشطة الكتابية /30</th>${currentTerm()===2?"<th>المشروع /60</th>":""}<th>المجموع /100</th></tr></thead>
-        <tbody>${rows.length?rows.map(x=>`<tr><td>${x.n}</td><td>${esc(x.name)} ${x.pod?"♿":""}</td><td>${x.tests}</td><td>${x.performance}</td><td>${x.written}</td>${currentTerm()===2?`<td>${projectScoreForStudent(x.id||x.studentId||"",2)}</td>`:""}<td><b>${x.total}</b></td></tr>`).join(""):'<tr><td colspan="6">لا توجد طالبات</td></tr>'}</tbody>
-      </table>
+<tbody>${rows.length?rows.map(x=>`<tr><td>${x.n}</td><td>${esc(x.name)} ${x.pod?"♿":""}</td><td>${x.tests}</td><td>${x.performance}</td><td>${x.written}</td>${currentTerm()===2?`<td>${projectScoreForStudent(x.id||x.studentId||"",2) ?? ""}</td>`:""}<td>${x.total}</td></tr>`).join(""):`<tr><td colspan="7">لا توجد بيانات</td></tr>`}</tbody>      </table>
     </div>
     <div class="print-kpis">
       <div>عدد الطالبات<b>${rows.length}</b></div>
