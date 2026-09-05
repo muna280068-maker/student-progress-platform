@@ -2088,25 +2088,65 @@ function renderFinalScores(){
 function saveFinalCategoryScores(){
   state.finalScores=state.finalScores||{};
   let bad=false;
+
   document.querySelectorAll(".perf-input").forEach(inp=>{
     const v=inp.value===""?0:Number(inp.value);
-    if(v<0||v>40||Number.isNaN(v)){inp.classList.add("invalid");bad=true;return}
+
+    if(v<0||v>40||Number.isNaN(v)){
+      inp.classList.add("invalid");
+      bad=true;
+      return;
+    }
+
     inp.classList.remove("invalid");
     const k=finalKey(inp.dataset.stu);
     state.finalScores[k]=state.finalScores[k]||{};
     state.finalScores[k].performance=v;
   });
+
   document.querySelectorAll(".written-input").forEach(inp=>{
     const v=inp.value===""?0:Number(inp.value);
-    if(v<0||v>30||Number.isNaN(v)){inp.classList.add("invalid");bad=true;return}
+
+    if(v<0||v>30||Number.isNaN(v)){
+      inp.classList.add("invalid");
+      bad=true;
+      return;
+    }
+
     inp.classList.remove("invalid");
     const k=finalKey(inp.dataset.stu);
     state.finalScores[k]=state.finalScores[k]||{};
     state.finalScores[k].written=v;
   });
-  if(bad){alert("تأكدي أن مهمات الأداء من 0 إلى 40 والأنشطة الكتابية من 0 إلى 30.");return}
-  persist();renderFinalScores();renderStudents();renderDashboard();
-  alert("تم حفظ درجات مهمات الأداء والأنشطة وتحديث المجموع من 100.");
+
+  if(currentTerm()===2){
+    document.querySelectorAll(".project-input").forEach(inp=>{
+      const v=inp.value===""?0:Number(inp.value);
+
+      if(v<0||v>60||Number.isNaN(v)){
+        inp.classList.add("invalid");
+        bad=true;
+        return;
+      }
+
+      inp.classList.remove("invalid");
+      const k=projectKey(inp.dataset.stu,2);
+      state.finalScores[k]=state.finalScores[k]||{};
+      state.finalScores[k].project=v;
+    });
+  }
+
+  if(bad){
+    alert("تأكدي من أن مهام الأداء من 0 إلى 40 والأنشطة الكتابية من 0 إلى 30 والمشروع من 0 إلى 60.");
+    return;
+  }
+
+  persist();
+  renderFinalScores();
+  renderStudents();
+  renderDashboard();
+
+  alert("تم حفظ درجات مهام الأداء والأنشطة والمشروع بنجاح.");
 }
 function renderFinalClassSummary(cls){
   const studs=studentsInClass(cls),box=document.getElementById("finalClassSummary");
