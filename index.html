@@ -2319,7 +2319,8 @@ function renderStudentProfile(){
       <div class="student-profile-kpi"><small>أفضل 3 اختبارات</small><b>${final.tests}/30</b></div>
       <div class="student-profile-kpi"><small>مهمات الأداء</small><b>${final.performance}/40</b></div>
       <div class="student-profile-kpi"><small>الأنشطة الكتابية</small><b>${final.written}/30</b></div>
-${currentTerm()===2?`<div class="student-profile-kpi"><small>المشروع — مستقل</small><b>${projectScoreForStudent(id,2)==null?"—":projectScoreForStudent(id,2)+"/60"}</b></div>`:""}    </div>
+      <div class="student-profile-kpi"><small>المجموع النهائي</small><b>${final.total}/100</b></div>${currentTerm()===2?`<div class="student-profile-kpi"><small>المشروع — مستقل</small><b>${projectScoreForStudent(id,2)}/60</b></div>`:""}
+    </div>
 
     <div class="profile-chart-wrap">
       <div class="profile-chart-card">
@@ -2599,8 +2600,11 @@ function renderParentReport(){
     <div class="student-profile-kpi"><small>المستوى الحالي</small>${last?levelChip(last.level):"—"}</div>
     <div class="student-profile-kpi"><small>الحالة</small><span class="smart-status ${st.cls}">${st.icon} ${st.label}</span></div>
     <div class="student-profile-kpi"><small>التغير</small><b>${delta===null?"بانتظار مقارنة":(delta>0?"+":"")+delta+"/10"}</b></div>
-${currentTerm()===2?`<div class="student-profile-kpi"><small>المشروع — مستقل</small><b>${projectScoreForStudent(id,2)==null?"—":projectScoreForStudent(id,2)+"/60"}</b></div>`:""}
-<div class="profile-block"><h4>تفصيل الدرجة</h4>الاختبارات: <b>${f.tests}/30</b> | مهام الأداء: <b>${f.performance}/40</b> | الأنشطة الكتابية: <b>${f.written}/30</b>${currentTerm()===2?` | المشروع: <b>${projectScoreForStudent(id,2)==null?"—":projectScoreForStudent(id,2)+"/60"}</b> <span class="subtle">(مستقل)</span>`:""}</div>
+    <div class="student-profile-kpi"><small>الدرجة النهائية</small><b>${f.total}/100</b></div>${currentTerm()===2?`<div class="student-profile-kpi"><small>المشروع — مستقل</small><b>${projectScoreForStudent(id,2)}/60</b></div>`:""}
+  </div>
+  <div class="profile-block"><h4>تفصيل الدرجة</h4>الاختبارات: <b>${f.tests}/30</b> | مهمات الأداء: <b>${f.performance}/40</b> | الأنشطة الكتابية: <b>${f.written}/30</b>${currentTerm()===2?` | المشروع: <b>${projectScoreForStudent(id,2)}/60</b> <span class="subtle">(مستقل)</span>`:""}</div>
+  <div class="profile-block"><h4>الخطة العلاجية</h4>${tr.length?tr.map(x=>`<div class="profile-item"><b>${fmtDate(x.date)}</b> — ${esc(x.reason)}<br>${x.actions.map(esc).join(" • ")}<br><b>${esc(x.outcome)}</b></div>`).join(""):"لا توجد خطة علاجية مسجلة."}</div>`;
+}
 function printParentReport(){renderParentReport();window.print()}
 function exportParentReport(){
   const id=document.getElementById("profileStudent")?.value;if(!id)return;
