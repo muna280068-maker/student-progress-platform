@@ -2004,11 +2004,15 @@ function officialRows(cls,term=currentTerm()){
 function renderOfficialSheet(cls){
   const box=document.getElementById("officialPrintSheet");if(!box)return;
   const rows=officialRows(cls);
-  const gradedRows=rows.filter(x=>termHasDataForStudent(x.id,currentTerm()));
+const gradedRows=rows.filter(x=>{
+  const f=getCategoryScores(x.id);
+  return (f.tests>0 || f.performance>0 || f.written>0);
+});
 const totals=gradedRows.map(x=>x.total);
 const avg=totals.length?(totals.reduce((a,b)=>a+b,0)/totals.length).toFixed(1):"-";
 const high=totals.length?Math.max(...totals):"-";
 const low=totals.length?Math.min(...totals):"-";
+
   box.innerHTML=`
     <div class="official-head">
       <h2>مجمع زايد التعليمي - الساف</h2>
