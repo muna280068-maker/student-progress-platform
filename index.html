@@ -2316,38 +2316,98 @@ function renderStudentProfile(){
     </div>
 
     <div class="student-profile-grid">
-      <div class="student-profile-kpi"><small>أفضل 3 اختبارات</small><b>${final.tests}/30</b></div>
-      <div class="student-profile-kpi"><small>مهمات الأداء</small><b>${final.performance}/40</b></div>
-      <div class="student-profile-kpi"><small>الأنشطة الكتابية</small><b>${final.written}/30</b></div>
-       <div class="student-profile-kpi"><small>المشروع - مستمر</small><b>${(()=>{const p=projectScoreForStudent(id,2);return (p==null||p===""||p==="null"||Number.isNaN(Number(p)))?"لم تُرصد بعد":Number(p)+"/60";})()}</b></div>
-        <h4>📈 رسم بياني لتقدم مستوى الطالبة عبر الزمن</h4>
-        <div class="profile-chart-legend">
-          <span><i class="legend-dot" style="background:#3c9b63"></i> متقنة 80–100%</span>
-          <span><i class="legend-dot" style="background:#397fc0"></i> في طريق الإتقان 60–79%</span>
-          <span><i class="legend-dot" style="background:#e69a2d"></i> تحتاج دعمًا 40–59%</span>
-          <span><i class="legend-dot" style="background:#d94b55"></i> تحتاج دعمًا مكثفًا أقل من 40%</span>
-        </div>
-        ${profileProgressChart(h)}
-        <div class="profile-chart-stats">
-          <div class="profile-chart-stat"><small>أعلى مستوى</small><b>${trend.high}</b></div>
-          <div class="profile-chart-stat"><small>أقل مستوى</small><b>${trend.low}</b></div>
-          <div class="profile-chart-stat"><small>مقدار التغير</small><b>${trend.delta}</b><div class="subtle">${trend.deltaLabel}</div></div>
+  <div class="student-profile-kpi">
+    <small>أفضل 3 اختبارات</small>
+    <b>${final.tests}/30</b>
+  </div>
+
+  <div class="student-profile-kpi">
+    <small>مهمات الأداء</small>
+    <b>${final.performance}/40</b>
+  </div>
+
+  <div class="student-profile-kpi">
+    <small>الأنشطة الكتابية</small>
+    <b>${final.written}/30</b>
+  </div>
+
+  <div class="student-profile-kpi">
+    <small>المشروع - مستمر</small>
+    <b>${(()=>{
+      const p=projectScoreForStudent(id,2);
+      return (p==null || p==="" || p==="null" || Number.isNaN(Number(p)))
+        ? "لم تُرصد بعد"
+        : Number(p)+"/60";
+    })()}</b>
+  </div>
+</div>
+
+<div class="profile-chart-wrap">
+
+  <div class="profile-chart-card">
+    <h4>📈 رسم بياني لتقدم مستوى الطالبة عبر الزمن</h4>
+
+    <div class="profile-chart-legend">
+      <span><i class="legend-dot" style="background:#3c9b63"></i> متمكنة 80–100%</span>
+      <span><i class="legend-dot" style="background:#397fc0"></i> في طريق الإتقان 60–79%</span>
+      <span><i class="legend-dot" style="background:#e69a2d"></i> تحتاج دعماً 40–59%</span>
+      <span><i class="legend-dot" style="background:#d94b55"></i> تحتاج دعماً مكثفاً أقل من 40%</span>
+    </div>
+
+    ${profileProgressChart(h)}
+
+    <div class="profile-chart-stats">
+      <div class="profile-chart-stat">
+        <small>أعلى مستوى</small>
+        <b>${trend.high}</b>
+      </div>
+
+      <div class="profile-chart-stat">
+        <small>أقل مستوى</small>
+        <b>${trend.low}</b>
+      </div>
+
+      <div class="profile-chart-stat">
+        <small>مقدار التغير</small>
+        <b>${trend.delta}</b>
+        <div class="subtle">${trend.deltaLabel}</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="profile-chart-card">
+    <h4>📊 توزيع الدرجة الحالية</h4>
+
+    <div class="profile-donut-area">
+      <div class="profile-donut"
+           style="--test-p:${final.total ? final.tests/final.total*100 : 0}%;--perf-p:${final.total ? final.performance/final.total*100 : 0}%">
+
+        <div class="profile-donut-center">
+          <b>${final.total}</b>
+          <small>/100<br>المجموع الحالي</small>
         </div>
       </div>
-      <div class="profile-chart-card">
-        <h4>📊 توزيع الدرجة الحالية</h4>
-        <div class="profile-donut-area">
-          <div class="profile-donut" style="--test-p:${final.total?final.tests/final.total*100:0}%;--perf-p:${final.total?final.performance/final.total*100:0}%">
-            <div class="profile-donut-center"><b>${final.total}</b><small>/100<br>المجموع الحالي</small></div>
-          </div>
-          <div class="profile-score-list">
-            <div><small>أفضل 3 اختبارات</small><b>${final.tests}/30</b></div>
-            <div><small>مهمات الأداء</small><b>${final.performance}/40</b></div>
-            <div><small>الأنشطة الكتابية</small><b>${final.written}/30</b></div>
-          </div>
+
+      <div class="profile-score-list">
+        <div>
+          <small>أفضل 3 اختبارات</small>
+          <b>${final.tests}/30</b>
+        </div>
+
+        <div>
+          <small>مهمات الأداء</small>
+          <b>${final.performance}/40</b>
+        </div>
+
+        <div>
+          <small>الأنشطة الكتابية</small>
+          <b>${final.written}/30</b>
         </div>
       </div>
     </div>
+  </div>
+
+</div>
 
     <div class="profile-block"><h4>📈 رحلة الاختبارات والمستويات</h4>${testsHtml}</div>
 
