@@ -525,9 +525,9 @@ th{background:#fcfaf8;color:#514944;position:sticky;top:0}
 
 .profile-chart-wrap{
   display:grid;
-  grid-template-columns:minmax(0,1.45fr) minmax(300px,.75fr);
-  gap:14px;
-  margin-top:14px;
+  grid-template-columns:minmax(0,1.2fr) minmax(320px,.8fr);
+  gap:12px;
+  margin-top:12px;
   width:100%;
   align-items:start;
 }
@@ -552,14 +552,12 @@ th{background:#fcfaf8;color:#514944;position:sticky;top:0}
 .profile-chart-legend{display:flex;gap:13px;flex-wrap:wrap;font-size:12px;color:var(--muted);margin-bottom:8px}
 .profile-chart-legend span{display:flex;align-items:center;gap:5px}
 .legend-dot{width:9px;height:9px;border-radius:50%;display:inline-block}
-.profile-svg{width:100%;height:auto;min-height:270px;display:block}
-.profile-chart-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:8px}
+.profile-svg{width:100%;height:auto;min-height:230px;display:block}.profile-chart-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:8px}
 .profile-chart-stat{border:1px solid var(--line);border-radius:9px;padding:8px;text-align:center}
 .profile-chart-stat small{display:block;color:var(--muted);margin-bottom:3px}
 .profile-chart-stat b{font-size:19px;color:var(--maroon)}
 .profile-donut-area{display:flex;align-items:center;justify-content:center;gap:18px;min-height:270px}
-.profile-donut{width:180px;height:180px;border-radius:50%;position:relative;display:flex;align-items:center;justify-content:center;background:conic-gradient(#3c9b63 0 var(--test-p),#4a8bc7 var(--test-p) calc(var(--test-p) + var(--perf-p)),#e69a2d calc(var(--test-p) + var(--perf-p)) 100%)}
-.profile-donut:after{content:"";position:absolute;width:112px;height:112px;background:#fff;border-radius:50%}
+.profile-donut-area{display:flex;align-items:center;justify-content:center;gap:18px;min-height:230px}.profile-donut:after{content:"";position:absolute;width:112px;height:112px;background:#fff;border-radius:50%}
 .profile-donut-center{position:relative;z-index:2;text-align:center}
 .profile-donut-center b{font-size:28px;color:var(--maroon);display:block}
 .profile-donut-center small{color:var(--muted)}
